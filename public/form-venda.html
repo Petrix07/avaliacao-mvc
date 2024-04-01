@@ -102,19 +102,16 @@
                     <div class="col-md-12">
                       <div class="form-group">
                         <label class="form-label">Produto</label>
-                        <select class="form-control custom-select">
+                        <select class="form-control custom-select" id="produtoSelect" name="codigoProduto">
                           {{PRODUTOS}}
-                          <!-- <option value="">Batata</option>
-                          <option value="">Arroz</option>
-                          <option value="">Feijão</option>
-                          <option value="">Coca-cola 2LT</option> -->
                         </select>
                       </div>
                     </div>
                     <div class="col-sm-6 col-md-4">
                       <div class="form-group">
                         <label class="form-label">Quantidade</label>
-                        <input type="number" class="form-control" placeholder="Digite aqui a quantidade">
+                        <input type="number" class="form-control" placeholder="Digite aqui a quantidade"
+                          name="quantidade" id="quantidade" value="1">
                       </div>
                     </div>
                     <div class="col-sm-6 col-md-4">
@@ -124,7 +121,8 @@
                           <span class="input-group-prepend">
                             <span class="input-group-text">R$</span>
                           </span>
-                          <input type="text" class="form-control text-right" aria-label="Valor">
+                          <input type="text" class="form-control text-right" aria-label="Valor" name="valorUnitario"
+                            id="valorUnitario">
                         </div>
                       </div>
                     </div>
@@ -136,7 +134,7 @@
                             <span class="input-group-text">R$</span>
                           </span>
                           <input type="text" class="form-control text-right" aria-label="Valor" disabled="disabled"
-                            title="Este campo não pode ser alterado">
+                            title="Este campo não pode ser alterado" name="valorTotal" id="valorTotal">
                         </div>
                       </div>
                     </div>
@@ -145,7 +143,7 @@
                         <div class="form-label">&nbsp;</div>
                         <div class="custom-controls-stacked">
                           <label class="custom-control custom-checkbox">
-                            <input type="checkbox" class="custom-control-input" name="example-checkbox1" value="option1"
+                            <input type="checkbox" class="custom-control-input" value="true" name="atualizaValorUnitario"
                               checked>
                             <span class="custom-control-label">Atualizar valor unitário do produto</span>
                           </label>
@@ -199,5 +197,56 @@
     </div>
   </div>
 </body>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<script>
+  document.getElementById('produtoSelect').addEventListener('change', function () {
+    let params = {
+      codigoProduto: this.value,
+    };
+
+    $.ajax({
+      type: "POST",
+      url: "public/ajax/venda.php",
+      data: JSON.stringify(params),
+      contentType: "application/json; charset=utf-8",
+      success: function (response) {
+        let resposta = JSON.parse(response);
+
+        document.getElementById('valorUnitario').value = resposta.valorUnitario;
+        let quantidade = document.getElementById('quantidade').value;
+        if (!(quantidade.trim() === '') && !isNaN(quantidade)) {
+          let total = quantidade * resposta.valorUnitario;
+          document.getElementById('valorTotal').value = total;
+          document.getElementById('quantidade').max = resposta.quantidade;
+        }
+      },
+      error: function (xhr, status, error) {
+        console.log(status, error);
+      }
+    });
+
+  });
+
+  document.getElementById('quantidade').addEventListener('change', function () {
+    let quantidade = document.getElementById('quantidade').value;
+    let valorUnitario = document.getElementById('valorUnitario').value;
+    if (!(quantidade.trim() === '') && !isNaN(quantidade) && !(valorUnitario.trim() === '') && !isNaN(valorUnitario)) {
+      let total = quantidade * valorUnitario;
+      document.getElementById('valorTotal').value = total;
+    }
+  });
+
+  document.getElementById('valorUnitario').addEventListener('change', function () {
+    let quantidade = document.getElementById('quantidade').value;
+    let valorUnitario = document.getElementById('valorUnitario').value;
+    if (!(quantidade.trim() === '') && !isNaN(quantidade) && !(valorUnitario.trim() === '') && !isNaN(valorUnitario)) {
+      let total = quantidade * valorUnitario;
+      document.getElementById('valorTotal').value = total;
+    }
+  });
+
+
+</script>
 
 </html>

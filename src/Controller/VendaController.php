@@ -2,13 +2,20 @@
 
 namespace App\Controller;
 
+use App\Interfaces\Model\ModelInterface;
 use App\Model\Enum\ProdutoEnum;
 use App\Model\ProdutoModel;
 use App\Model\VendaModel;
 use App\View\VendaView;
 
+/**
+ * Controller da entidade de venda
+ */
 class VendaController extends BaseController {
 
+    /**
+     * Construtor da classe
+     */
     public function __construct() {
         $this->View  = new VendaView();
         $this->Model = new VendaModel();
@@ -20,6 +27,14 @@ class VendaController extends BaseController {
      */
     public function getView(): \App\Interfaces\View\ViewInterface {
         return parent::getView();
+    }
+
+    /**
+     * Retorna o Model vinculado ao controller
+     * @return VendaModel
+     */
+    public function getModel(): ModelInterface {
+        return parent::getModel();
     }
 
     /**
@@ -62,8 +77,12 @@ class VendaController extends BaseController {
         return $retorno;
     }
 
+    /**
+     * Retorna as opções de produto
+     * @return string
+     */
     private function getOpcoesProduto() {
-        $itens = '';
+        $itens = '<option disabled selected value=""> Selecionar... </option>';
         $retorno = (new ProdutoModel)->getAll('', 'PROestoque > 0 AND PROativo = ' . ProdutoEnum::ATIVO);
         foreach ($retorno as $Produto) {
             $itens .= $this->getView()->montaItemProduto($Produto->getCodigo(), $Produto->getDescricao());

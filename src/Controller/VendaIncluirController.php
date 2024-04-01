@@ -2,6 +2,8 @@
 
 namespace App\Controller;
 
+use App\Core\Router;
+use App\Model\ProdutoModel;
 use App\Model\VendaModel;
 use App\View\ProdutoIncluirView;
 use App\View\VendaView;
@@ -49,13 +51,31 @@ class VendaIncluirController extends VendaController {
         if (!empty($_POST)) {
             if ($this->validaCamposObrigatorios()) {
                 $sucesso  = $this->insere();
-                $mensagem = $sucesso ? 'Registro inserido com sucesso!' : 'Não foi possível cadastrar o registro.';
-                $this->getView()->mensagem($mensagem);
+                if ($sucesso) {
+                    if (isset($_POST['atualizaValorUnitario'])) {
+                        $this->atualizaValorUnitarioProduto();
+                    }
+                    $this->diminuiEstoque();
+                } else {
+                    $this->getView()->mensagem('Não foi possível cadastrar o registro.');
+                }
             }
         }
 
+        Router::redireciona('/vendas');
+    }
 
-        return $this->index();
+    /**
+     * Atualiza o valor unitário do produto
+     * @return void
+     */
+    private function atualizaValorUnitarioProduto() {
+        $this->getModel()->getProduto()->update(['PROvalor_unitario' => $_POST['valorUnitario']]);
+    }
+
+    private function diminuiEstoque() {
+        $novoEstoque = $this->getModel()->getProduto()->getEstoque() - $_POST['quantidade'];
+        $this->getModel()->getProduto()->update(['PROestoque' => $novoEstoque]);
     }
 
     /**
@@ -88,10 +108,9 @@ class VendaIncluirController extends VendaController {
      */
     protected function getCamposObrigatorios(): array {
         return [
-            'descricao'     => 'Descrição',
-            'estoque'       => 'Estoque',
-            'codigoBarras'  => 'Código Barras',
-            'valorUnitario' => 'Valor Unitário'
+            'codigoProduto'         => 'Produto',
+            'quantidade'            => 'Quantidade',
+            'valorUnitario'         => 'Valor Unitário'
         ];
     }
     /**
@@ -99,8 +118,12 @@ class VendaIncluirController extends VendaController {
      * @return bool
      */
     private function insere(): bool {
-        $Model = $this->getModelCarregadoByParametros();
-        return $Model->create();
+        $this->Model = $this->getModelCarregadoByParametros();
+        $this->getModel()->getProduto()->refresh();
+
+        $novoEstoque = $this->getModel()->getProduto()->getEstoque() - $_POST['quantidade'];
+
+        return $novoEstoque >= 0 ? $this->getModel()->create() : false; 
     }
 
 
@@ -111,10 +134,10 @@ class VendaIncluirController extends VendaController {
     protected function getModelCarregadoByParametros(): VendaModel {
         $Model = new VendaModel(
             null,
-            $_POST['codigoBarras'],
-            $_POST['descricao'],
+            $_POST['codigoProduto'],
+            $_POST['quantidade'],
             $_POST['valorUnitario'],
-            $_POST['estoque']
+            ($_POST['quantidade'] * $_POST['valorUnitario'])
         );
 
         return $Model;

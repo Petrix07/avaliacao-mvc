@@ -47,13 +47,13 @@ class Router {
         $this->addGet('/produtos/ativar/([0-9]+)',    Router::NAMESPACE_CONTROLLER . 'ProdutoAtivarController@ativar');
         /* Consulta de vendas */
         $this->addGet('/vendas',                      Router::NAMESPACE_CONTROLLER . 'VendaController@index');
-
+        
         /* Cadastra um novo produto */
         $this->addPost('/produtos/cadastrar',        Router::NAMESPACE_CONTROLLER . 'ProdutoIncluirController@cadastrar');
         /* Altera um produto */
         $this->addPost('/produtos/alterar/([0-9]+)', Router::NAMESPACE_CONTROLLER . 'ProdutoAlterarController@alterar');
         /* Cadastra uma nova venda */
-        $this->addPost('/vendas/cadastrar',          Router::NAMESPACE_CONTROLLER . 'VendaIncluirController@cadastrar');
+        $this->addPost('/vendas/cadastrar',          Router::NAMESPACE_CONTROLLER . 'VendaIncluirController@cadastrar');        
     }
 
     /**
@@ -83,8 +83,6 @@ class Router {
      * @return string
      */
     public function direciona(string $uri, string $requestType) {
-        var_dump($uri);
-        var_dump($requestType);
         foreach ($this->rotas[$requestType] as $route) {
             if (preg_match('#^' . $route['uri'] . '$#', $uri, $matches)) {
                 array_shift($matches);
@@ -96,6 +94,12 @@ class Router {
         return $response;
     }
 
+    /**
+     * Executa a ação do controller informando os parâmetros presentes na uri
+     * @param mixed $Controller
+     * @param mixed $params
+     * @return mixed
+     */
     protected function executarAcao($Controller, $params = []) {
         $Controller = explode('@', $Controller);
         $class      = $Controller[0];

@@ -46,7 +46,7 @@ class VendaView extends BaseView {
      * @param string $descricao
      * @return string
      */
-    public function montaItemProduto(int $codigo, string $descricao) {
+    public function montaItemProduto(int $codigo, string $descricao,) {
         return '<option value="' . $codigo . '">' . $descricao . '</option>';
     }
 }

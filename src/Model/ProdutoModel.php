@@ -153,23 +153,29 @@ class ProdutoModel extends BaseModel {
     /**
      * @inheritDoc
      */
-    public function update(): bool {
-        $sql  = $this->getSqlUpdate(
-            [
-                'PROcodigo_barras'  => $this->codigoBarras,
-                'PROdescricao'      => "'$this->descricao'",
-                'PROvalor_unitario' => $this->valorUnitario,
-                'PROestoque'        => $this->estoque
-            ]
-        );
-
+    public function update(array $colunas = []): bool {
+        $colunasToUpdate = count($colunas) ? $colunas : $this->getAllColunasAtualizar();
+        $sql  = $this->getSqlUpdate($colunasToUpdate);
         $sql .= ' WHERE PROcodigo = ' . $this->codigo;
-
         $this->getConexao()->setConexao();
         $retorno = $this->getConexao()->Query($sql, true);
         $this->getConexao()->closeConexao();
 
         return $retorno;
+    }
+
+    /**
+     * Retorna todas as coluas que o registro deve atualizar
+     *
+     * @return array
+     */
+    private function getAllColunasAtualizar(): array {
+        return [
+            'PROcodigo_barras'  => $this->codigoBarras,
+            'PROdescricao'      => "'$this->descricao'",
+            'PROvalor_unitario' => $this->valorUnitario,
+            'PROestoque'        => $this->estoque
+        ];
     }
 
     /**
