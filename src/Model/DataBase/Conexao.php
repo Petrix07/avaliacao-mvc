@@ -2,6 +2,8 @@
 
 namespace App\Model\DataBase;
 
+use mysqli_result;
+
 /**
  * Classe utilizada para a conexão do sistema com o BD
  *
@@ -38,7 +40,10 @@ class Conexao {
   private $conexao;
 
 
-  private $query;
+  /**
+   * @var mysqli_result
+   */
+  private $Query;
 
   /**
    * Construtor da classe
@@ -47,7 +52,7 @@ class Conexao {
    * @param mixed $sUsuario
    * @param mixed $sSenha
    */
-  function __construct($sNome = 'avaliacao', $sHost = 'localhost', $sUsuario = 'root', $sSenha = '') {
+  function __construct($sNome = 'projetomvc', $sHost = 'localhost', $sUsuario = 'root', $sSenha = 'aluno') {
     $this->nome    = $sNome;
     $this->host    = $sHost;
     $this->usuario = $sUsuario;
@@ -68,7 +73,7 @@ class Conexao {
 
         date_default_timezone_set($this->timeZone);
 
-        $this->query(sprintf("SET time_zone = '%s'", date('P')));
+        $this->Query(sprintf("SET time_zone = '%s'", date('P')));
         date_default_timezone_set($this->timeZone);
       } else {
         echo 'Nosso banco de dados não está respondendo à solicitação de acesso, já estamos verificando. Por favor aguarde!';
@@ -78,27 +83,41 @@ class Conexao {
     }
   }
 
-  public function query($sSql, $bReturn = false) {
+  /**
+   * @param mixed $sSql
+   * @param mixed $bReturn
+   * @return bool|mysqli_result
+   */
+  public function Query($sSql, $bReturn = false) {
     if ($rQry = mysqli_query($this->conexao, $sSql)) {
       if ($bReturn) {
         return $rQry;
       } else {
-        $this->query = $rQry;
+        $this->Query = $rQry;
       }
     }
   }
 
-  public function getQuery() {
-    return $this->query;
+  /**
+   * Retorna o objeto Query definido
+   *
+   * @return mysqli_result
+   */
+  public function getQuery(): mysqli_result {
+    return $this->Query;
   }
 
   public function closeConexao() {
     mysqli_close($this->conexao);
   }
 
-  public function getArrayResults() {
+  /**
+   * Retorna o resultado da Query em formato de array
+   * @return array
+   */
+  public function getArrayResults(): array {
     $aReturn = [];
-    while ($aDados = mysqli_fetch_array($this->query, MYSQLI_ASSOC)) {
+    while ($aDados = mysqli_fetch_array($this->Query, MYSQLI_ASSOC)) {
       $aReturn[] = $aDados;
     }
     return $aReturn;

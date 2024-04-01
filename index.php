@@ -11,7 +11,7 @@ echo (new Router)->direciona(getUriTratada(), $_SERVER['REQUEST_METHOD']);
  * @return string
  */
 function getUriTratada(): string {
-    $uri = $_SERVER['REQUEST_URI'];
+    $uri = strtolower($_SERVER['REQUEST_URI']);
     if (strpos($uri, Router::PATH_BASE) === 0) {
         $uri = substr($uri, strlen(Router::PATH_BASE));
     }

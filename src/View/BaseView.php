@@ -2,15 +2,43 @@
 
 namespace App\View;
 
-use App\Interfaces\View\InterfaceView;
+use App\Interfaces\View\ViewInterface;
 
 /**
  * Classe base para a criação de views
  */
-abstract class BaseView implements InterfaceView {
+abstract class BaseView implements ViewInterface {
 
     const
         PATH_PAGINAS_HTML = __DIR__ . '/../../public/';
+
+    /**
+     * Parâmetros que serão enviados para o arquivo html
+     * @var array
+     */
+    protected $parametrosView = [];
+
+    /**
+     * Get parâmetros que serão enviados para o arquivo html
+     *
+     * @return  array
+     */
+    public function getParametrosView() {
+        return $this->parametrosView;
+    }
+
+    /**
+     * Set parâmetros que serão enviados para o arquivo html
+     *
+     * @param  array  $parametrosView  Parâmetros que serão enviados para o arquivo html
+     *
+     * @return self
+     */
+    public function setParametrosView(array $parametrosView) {
+        $this->parametrosView = $parametrosView;
+
+        return $this;
+    }
 
     /**
      * Retorna o conteúdo da página HTML solicitada
@@ -42,5 +70,13 @@ abstract class BaseView implements InterfaceView {
         return array_map(function ($palavra) {
             return '{{' . $palavra . '}}';
         }, $arrayBase);
+    }
+
+    public function mensagem(string $textoMensagem) {
+        // echo '<script type="text/javascript">alert("' . $textoMensagem . '");<script type="text/javascript">';
+        $mensagem =
+            '<script type="text/javascript"> alert("' . $textoMensagem . '"); </script>';
+
+        echo $mensagem;
     }
 }

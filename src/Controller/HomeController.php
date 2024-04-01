@@ -2,6 +2,9 @@
 
 namespace App\Controller;
 
+use App\Model\DataBase\Conexao;
+use App\Model\ProdutoModel;
+use App\Model\VendaModel;
 use App\View\HomeView;
 
 /**
@@ -9,6 +12,9 @@ use App\View\HomeView;
  */
 class HomeController extends BaseController {
 
+    /**
+     * Construtor da classe
+     */
     public function __construct() {
         $this->View = new HomeView();
     }
@@ -17,10 +23,20 @@ class HomeController extends BaseController {
      * @inheritDoc
      */
     public function index(): string {
+        $this->carregaParametrosView();
+
         return $this->View->renderizar();
     }
 
-    public function teste() {
-        return '123123';
+    /**
+     * @inheritDoc
+     * @return void
+     */
+    public function carregaParametrosView(): void {
+        $parametros = $this->View->getParametrosObrigatorios();
+        $parametros['QUANTIDADE_PRODUTOS'] = (new ProdutoModel())->getTotalRegistros();
+        $parametros['QUANTIDADE_VENDAS']   = (new VendaModel())->getTotalRegistros();;
+
+        $this->View->setParametrosView($parametros);
     }
 }
