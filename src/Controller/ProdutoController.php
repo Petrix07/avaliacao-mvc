@@ -56,7 +56,7 @@ class ProdutoController extends BaseController {
      */
     private function getRegistrosConsulta() {
         $retorno   = '';
-        $registros = $this->getModel()->getAll('', 'PROativo = ' . ProdutoEnum::ATIVO);
+        $registros = $this->getModel()->getAll($this->getModel()->getSqlForConsulta(), 'PROativo = ' . ProdutoEnum::ATIVO);
         foreach ($registros as $Produto) {
             $retorno .= $this->getView()->montaLinhaConsulta($Produto->getCodigo(), $Produto->getDescricao(), $Produto->getValorUnitario(), $Produto->getEstoque(), $Produto->getDataUltimaVenda(), $Produto->getTotalVendas());
         }

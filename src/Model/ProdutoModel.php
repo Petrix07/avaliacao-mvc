@@ -91,6 +91,7 @@ class ProdutoModel extends BaseModel {
             $sql = $this->getAllSql();
         if (!empty($condicao))
             $sql .= ' WHERE ' . $condicao;
+
         $this->getConexao()->setConexao();
         $this->getConexao()->Query($sql);
         $registros = $this->getConexao()->getArrayResults();
@@ -103,7 +104,7 @@ class ProdutoModel extends BaseModel {
                 $registro['PROvalor_unitario'],
                 $registro['PROestoque'],
                 $registro['PROdata_ultima_venda'],
-                null,
+                isset($registro['TotalVenda']) ? $registro['TotalVenda'] : null,
                 $registro['PROativo']
             );
 
@@ -112,6 +113,29 @@ class ProdutoModel extends BaseModel {
         $this->getConexao()->closeConexao();
 
         return $retorno;
+    }
+
+    /**
+     * Retorna o SQL base para a consulta
+     * @return string
+     */
+    public function getSqlForConsulta(): string {
+        return $this->getAllSql(['*', $this->getSubQueryConsulta()]);
+    }
+
+    /**
+     * Retorna o SQL utilizado pela consulta 
+     * @return string
+     */
+    private function getSubQueryConsulta(): string {
+        return '(
+            SELECT
+                SUM(VENvalor_total)
+            FROM
+                projetomvc.TBVenda
+            WHERE
+                PROcodigo = TBPRODUTO.procodigo
+        ) as TotalVenda';
     }
 
     /**
