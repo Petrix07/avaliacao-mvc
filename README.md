@@ -114,7 +114,7 @@ FROM
 
 # Comentários: 
 
-1. O intuito do desenvolvimento de um "mini-framework" é para demonstrar domínio da linguagem e demais conhecimentos em desnevolvimento web;
+1. O intuito do desenvolvimento de um "mini-framework" é para demonstrar domínio da linguagem e demais conhecimentos em desenvolvimento web;
 > Usando um framework como Laravel/Symfony/Zend, os "maiores" desafios seriam facilmente contornados, o que tornaria o desenvolvimento do projeto muito simplificado.
 
 2. Possíveis melhorias poderiam ser aplicadas no oprojeto visando qualidade de software, como:
