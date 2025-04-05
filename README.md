@@ -110,6 +110,7 @@ FROM
   - `/produtos/lixeira`            - Consulta da "Lixeira"
   - `/produtos/desativar/([0-9]+)` - Ação de "Excluir"
   - `/produtos/ativar/([0-9]+)`    - Ação de "Recuperar"
+  
 > Algumas rotas podem aparecer de forma "duplicada", estando presento nas rotas "GET" & "POST". Isto ocorre pois a primeira rota é responsável por carregar a tela de manutenção do registro(rota get) e posteriormente é realizado o processamento e armazenamento no banco(rota post).
 
 # Comentários: 
